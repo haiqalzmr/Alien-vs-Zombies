@@ -79,64 +79,7 @@ int main()
     do
     {
         displayBoard();
-        cout << "\nCommand > ";
-        cin >> command;
-        toLower(command);
-        if (command == "up" || command == "down" || command == "left" || command == "right")
-        {
-            alienMove(command);
-        }
-        else if (command == "help")
-        {
-            helpSection(); // If command is help, will headed to helpSection function.
-            Pause();
-        }
-        else if (command == "arrow")
-        {
-            arrow(); // If command is arrow, will headed to arrow function.
-            Pause();
-        }
-        else if (command == "save")
-        {
-
-            string filename;
-            // cout << "Enter a name for the saved game: ";
-            // cin >> filename;
-            saveGame();
-            Pause();
-        }
-        else if (command == "load")
-        {
-            string filename;
-            // cout << "Enter the name of the saved game: ";
-            // cin >> filename;
-            loadGame();
-            Pause();
-        }
-        else if (command == "quit")
-        {
-            Quit();
-            Pause();
-        }
-        else
-            cout << "\n\nInvalid Command!!\n\n";
-
-        if (alienWin())
-        {
-            cout << "Alien Wins!\n\n";
-            endGame = true;
-        }
-        else if (alienDead())
-        {
-            cout << "Alien Died (^,^)";
-            endGame = true;
-        }
-
-    } while (!endGame);
-
-    system("pause");
-
-    return 0;
+       
 }
 
 void resetPath()
