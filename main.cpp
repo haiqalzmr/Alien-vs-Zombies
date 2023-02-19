@@ -8,16 +8,6 @@
 // Phones: 011-53540207 | 010-5376195 | 011-23523686 
 // ********************************************************* 
 
-// *********************************************************
-// Course: TCP1101 PROGRAMMING FUNDAMENTALS
-// Year: Trimester 1, 2022/23 (T2215)
-// Lab: TT10L
-// Names: LEE JUN YAO | MUHAMMAD AMIRUL HAIQAL BIN ZAMERI | MUHAMMAD AFIF JAZIMIN BIN IDRIS
-// IDs: 1211103763 | 1211104232 | 1211103419
-// Emails: 1211103763@STUDENT.MMU.EDU.MY | 1211104232@STUDENT.MMU.EDU.MY | 1211103419@STUDENT.MMU.EDU.MY
-// Phones: 01123523686 | 01153540207 | 0105376195
-// *********************************************************
-
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -38,7 +28,8 @@ int ranges[10];
 int zombiesX[10];
 int zombiesY[10];
 char **grid;
-
+// Define an array of characters
+char characters[8] = {'^', 'v', '>', '<', 'h', 'p', 'r', ' '};
 
 struct GameData
 {
@@ -69,19 +60,18 @@ bool boundary(int i, int j);
 void alienMove(string direction);
 void alienMove(string direction, int r, int c);
 void zombieMove(int z);
+void helpSection();
 int Pause();
-
+void arrow();
 bool alienWin();
 bool alienDead();
 bool validPosition(int r, int c);
 void hitpod(int r, int c);
 void attack(int z, int r, int c, int range);
 void resetPath();
-
-
+void saveGame();
+void loadGame();
 void Quit();
-
-
 
 int main()
 {
@@ -128,12 +118,18 @@ int main()
         }
         else if (command == "save")
         {
-
-
+            string filename;
+            // cout << "Enter a name for the saved game: ";
+            // cin >> filename;
+            saveGame();
             Pause();
         }
         else if (command == "load")
         {
+            string filename;
+            // cout << "Enter the name of the saved game: ";
+            // cin >> filename;
+            loadGame();
             Pause();
         }
         else if (command == "quit")
@@ -429,7 +425,6 @@ void alienMove(string direction, int r, int c)
     else if (direction == "right")
         alienMove(direction, r, c + 1);
 }
-
 // If all zombies have zero health, the function returns true, indicating that the aliens have won.
 bool alienWin()
 {
@@ -455,22 +450,78 @@ bool boundary(int i, int j)
     return (i < 0 || j < 0 || i >= rows || j >= columns);
 }
 
+void arrow()
+{
+    int r, c;
+    string direction;
+    do
+    {
+        cout << "\nEnter row: ";
+        cin >> r;
 
+        if (cin.fail() || r < 1 || r > rows)
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "\nInvalid Input!! Number of rows are " << rows << ".\n";
+        }
+    } while (r < 1 || r > rows);
 
+    do
+    {
+        cout << "\nEnter column: ";
+        cin >> c;
 
+        if (cin.fail() || c < 1 || c > columns)
+        {
+            cin.clear();
+            cin.ignore();
+            cout << "\nInvalid Input!! Number of columns are " << columns << ".\n";
+        }
+    } while (c < 1 || c > columns);
 
+    cin.ignore();
+    do
+    {
+        cout << "\nEnter direction: ";
+        cin >> direction;
 
+        toLower(direction);
+        if (direction != "up" && direction != "down" && direction != "left" && direction != "right")
+        {
+            cout << "\nInvalid Input!!\n";
+        }
+        // The direction input is also validated to make sure it's either "up", "down", "left", or "right"
+    } while (direction != "up" && direction != "down" && direction != "left" && direction != "right");
+    // The arrow is then fired in the specified direction if the grid at the specified position contains an arrow
+    if (grid[r - 1][c - 1] == '^' || grid[r - 1][c - 1] == '<' || grid[r - 1][c - 1] == '>' || grid[r - 1][c - 1] == 'v')
+    {
+        if (direction == "up")
+            grid[r - 1][c - 1] = '^';
+        else if (direction == "down")
+            grid[r - 1][c - 1] = 'v';
+        else if (direction == "left")
+            grid[r - 1][c - 1] = '<';
+        else if (direction == "right")
+            grid[r - 1][c - 1] = '>';
+    }
+    else
+    {
+        cout << "\nThis is not an arrow.\n\n"; // Doesn't contain an arrow message
+    }
+    cin.ignore();
+}
 
-
-
-
-
-
-
-
-
-
-
+void StartUp()
+{
+    cout << "|>>>>>>>>>>>>>>>>o<<<<<<<<<<<<<<<<|" << endl;
+    cout << "|   Welcome To Alien VS Zombie!   |" << endl;
+    cout << "|>>>>>>>>>>>>>>>>o<<<<<<<<<<<<<<<<|" << endl
+         << endl;
+    cout << "Press Enter to continue . . .";
+    cin.ignore();
+    cout << " " << endl;
+}
 void Quit()
 {
     char quitanswer;
@@ -498,32 +549,75 @@ void Quit()
     }
 }
 
+void customSetting()
+{
+    cout << "-----------------------" << endl;
+    cout << " Default Game Settings" << endl;
+    cout << "-----------------------" << endl;
+    cout << " " << endl;
+    cout << "Board Rows: " << rows << endl;
+    cout << "Board Columns: " << columns << endl;
+    cout << "Zombie Count: " << zombies << endl
+         << endl;
 
+    char answer;
+    cout << "Do you wish to change default setting? (y/n) => ";
+    cin >> answer;
+    cout << " " << endl;
 
+    // check if user wants to change default setting
+    if (tolower(answer) == 'y')
+    { // tolower() is to convert input to lowercase
 
+        cout << "Enter the number of rows: ";
+        cin >> rows;
+        while (rows % 2 == 0)
+        {
+            cout << " " << endl;
+            cout << "Number of rows cannot be in even number." << endl
+                 << endl;
+            cout << "Enter the number of rows: ";
+            cin >> rows;
+        }
 
+        cout << "Enter the number of columns: ";
+        cin >> columns;
+        while (columns % 2 == 0)
+        {
+            cout << " " << endl;
+            cout << "Number of columns cannot be in even number." << endl
+                 << endl;
+            cout << "Enter the number of columns: ";
+            cin >> columns;
+        }
 
+        cout << "Enter number of zombie(s):";
+        cin >> zombies;
 
+        while (zombies > 10)
+        {
+            cout << " " << endl;
+            cout << "Number of zombie must below than 10" << endl
+                 << endl;
+            cout << "Enter number of zombie(s):";
+            cin >> zombies;
+        }
+    }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void helpSection()
+{
+    cout << "\n\tCommands\n";
+    cout << "up    - Alien to move up\n";
+    cout << "down  - Alien to move down\n";
+    cout << "left  - Alien to move left\n";
+    cout << "right - Alien to move right\n";
+    cout << "arrow - Change the direction of an arrow\n";
+    cout << "help  - Display these user commands\n";
+    cout << "save  - Save the game\n";
+    cout << "load  - Load a game\n";
+    cout << "quit  - Quit the game\n\n";
+}
 
 void displayBoard()
 {
@@ -647,22 +741,87 @@ void toLower(string &s)
             s[i] -= 32;
 }
 
+void saveGame()
+{
+    ofstream outputFile("save.txt");
+    if (outputFile.is_open())
+    {
+        outputFile << rows << " " << columns << " " << zombies << endl;
 
+        // Save map contents
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                outputFile << grid[i][j];
+            }
+            outputFile << endl;
+        }
 
+        // Save Alien position
+        outputFile << alienX << " " << alienY << endl;
 
+        outputFile << alienHealth << " " << alienDamage << endl;
 
+        // Save Zombie positions and attributes
+        for (int i = 0; i < zombies; i++)
+        {
 
+            outputFile << zombiesHealth[i] << " " << zombiesDamage[i] << " " << ranges[i] << " " << zombiesX[i] << " " << zombiesY[i] << endl;
+        }
 
+        outputFile.close();
+        cout << "Game saved successfully!" << endl;
+    }
+    else
+    {
+        cout << "Error: Unable to save game." << endl;
+    }
+}
 
+void loadGame()
+{
+    ifstream inputFile("save.txt");
+    if (inputFile.is_open())
+    {
+        // Read game state data from the file
+        inputFile >> rows >> columns >> zombies;
+        inputFile.ignore(); // Ignore the newline character
 
+        // Dynamically allocate memory for the grid array
+        grid = new char *[rows];
+        for (int i = 0; i < rows; i++)
+        {
+            grid[i] = new char[columns];
+        }
+        // Load map contents
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                inputFile.get(grid[i][j]);
+            }
+            inputFile.ignore(); // Ignore the newline character
+        }
 
+        // Load Alien position
+        inputFile >> alienX >> alienY;
+        inputFile >> alienHealth >> alienDamage;
+        // Load Zombie positions and attributes
+        for (int i = 0; i < zombies; i++)
+        {
 
+            inputFile >> zombiesHealth[i] >> zombiesDamage[i] >> ranges[i] >> zombiesX[i] >> zombiesY[i];
+        }
 
-
-
-
-
-
+        inputFile.close();
+        cout << "Game loaded successfully!" << endl;
+    }
+    else
+    {
+        cout << "Error: Unable to load game." << endl;
+    }
+}
 
 int ClearScreen()
 {
@@ -681,5 +840,3 @@ int Pause() // Pause the game until the user presses any key
     return std::system(R"(read -p "Press any key to continue . . . " dummy)");
 #endif
 }
-
-
