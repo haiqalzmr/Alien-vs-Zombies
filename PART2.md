@@ -39,13 +39,16 @@ MUHAMMAD AMIRUL HAIQAL BIN ZAMERI
 3. Doing Game Contols
 4. Commands
 5. Load Game
+6. Save Game
+7. Custom Game Setting
 
 MUHAMMAD AFIF JAZIMIN BIN IDRIS
 
 1. Doing Game Board
 2. Doing Game Flow
-3. Doing the Win or Dead (Quit Game)
-4. Save Game
+3. Doing the Win or Dead
+4. Quit Game
+
 
 LEE JUN YAO
 
