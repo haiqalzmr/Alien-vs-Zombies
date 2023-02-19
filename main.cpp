@@ -37,20 +37,50 @@ int zombiesDamage[10];
 int ranges[10];
 int zombiesX[10];
 int zombiesY[10];
+char **grid;
 
+
+struct GameData
+{
+    int rows;
+    int columns;
+    int zombies;
+    int alienHealth;
+    int alienDamage;
+    int alienX, alienY;
+    int zombiesHealth[10];
+    int zombiesDamage[10];
+    int ranges[10];
+    int zombiesX[10];
+    int zombiesY[10];
+    char **grid;
+    char characters[8] = {'^', 'v', '>', '<', 'h', 'p', 'r', ' '};
+};
 
 using namespace std;
 
-
+void StartUp();
+void customSetting();
+void board();
+void displayBoard();
 void displayHealth();
+void toLower(string &s);
+bool boundary(int i, int j);
 void alienMove(string direction);
 void alienMove(string direction, int r, int c);
 void zombieMove(int z);
 int Pause();
+
+bool alienWin();
+bool alienDead();
 bool validPosition(int r, int c);
 void hitpod(int r, int c);
 void attack(int z, int r, int c, int range);
 void resetPath();
+
+
+void Quit();
+
 
 
 int main()
@@ -79,7 +109,57 @@ int main()
     do
     {
         displayBoard();
-       
+        cout << "\nCommand > ";
+        cin >> command;
+        toLower(command);
+        if (command == "up" || command == "down" || command == "left" || command == "right")
+        {
+            alienMove(command);
+        }
+        else if (command == "help")
+        {
+            helpSection(); // If command is help, will headed to helpSection function.
+            Pause();
+        }
+        else if (command == "arrow")
+        {
+            arrow(); // If command is arrow, will headed to arrow function.
+            Pause();
+        }
+        else if (command == "save")
+        {
+
+
+            Pause();
+        }
+        else if (command == "load")
+        {
+            Pause();
+        }
+        else if (command == "quit")
+        {
+            Quit();
+            Pause();
+        }
+        else
+            cout << "\n\nInvalid Command!!\n\n";
+
+        if (alienWin())
+        {
+            cout << "Alien Wins!\n\n";
+            endGame = true;
+        }
+        else if (alienDead())
+        {
+            cout << "Alien Died (^,^)";
+            endGame = true;
+        }
+
+    } while (!endGame);
+
+    system("pause");
+
+    return 0;     
 }
 
 void resetPath()
@@ -350,6 +430,205 @@ void alienMove(string direction, int r, int c)
         alienMove(direction, r, c + 1);
 }
 
+// If all zombies have zero health, the function returns true, indicating that the aliens have won.
+bool alienWin()
+{
+    for (int i = 0; i < zombies; i++)
+    {
+        if (zombiesHealth[i] > 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool alienDead()
+{ // check the health of alien is zero or not
+    if (alienHealth <= 0)
+        return true;
+    return false;
+}
+
+bool boundary(int i, int j)
+{
+    return (i < 0 || j < 0 || i >= rows || j >= columns);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Quit()
+{
+    char quitanswer;
+    cout << "Do you really want to quit? (y/n) => ";
+    cin >> quitanswer;
+    cout << " " << endl;
+    bool endGame = false;
+
+    if (tolower(quitanswer) == 'y')
+    {
+        // Quit the game
+        cout << "Exiting game..." << endl;
+        sleep(2);
+        exit(0);
+    }
+    else if (tolower(quitanswer) == 'n')
+    {
+        // Continue playing the game
+        cout << "Resuming game..." << endl;
+    }
+    else
+    {
+        cout << "\nInavlid Input. Please enter 'y' or 'n'.\n\n";
+        Quit();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void displayBoard()
+{
+    // Print top row of "+" and "-"
+    cout << setw(4) << " ";
+    for (int i = 1; i <= columns; i++)
+    {
+        cout << "+"
+             << " - ";
+    }
+    cout << "+" << endl;
+
+    // Print the grid with your specified characters
+    for (int i = 1; i <= rows; i++)
+    {
+        cout << setw(4) << i;
+        for (int j = 1; j <= columns; j++)
+        {
+            cout << "|"
+                 << " " << grid[i - 1][j - 1] << " ";
+        }
+        cout << "|" << endl;
+
+        // Print row of "+" and "-"
+        cout << setw(5) << "+";
+        for (int j = 1; j <= columns; j++)
+        {
+            cout << " - "
+                 << "+";
+        }
+        cout << endl;
+    }
+
+    // Print column numbers below grid
+    cout << setw(5) << " ";
+    for (int i = 1; i <= columns; i++)
+    {
+        cout << setw(2) << i << setw(2) << ' ';
+    }
+    cout << endl;
+    displayHealth();
+}
+
+void board()
+{
+    // calculate the middle row and column
+    int middleRow = (rows - 1) / 2;
+    int middleColumn = (columns - 1) / 2;
+    alienX = middleRow;
+    alienY = middleColumn;
+
+    // randomly place the zombies on the board
+    int x, y;
+    for (int i = 0; i < zombies; i++)
+    {
+        x = rand() % rows;
+        y = rand() % columns;
+        if (!validPosition(x, y))
+        {
+            i--;
+            continue;
+        }
+        zombiesX[i] = rand() % rows;
+        zombiesY[i] = rand() % columns;
+    }
+
+    for (int i = 0; i < zombies; i++)
+    {
+        zombiesHealth[i] = (rand() % 3) * 50 + 150;
+        zombiesDamage[i] = (rand() % 3) * 5 + 5;
+        ranges[i] = (rand() % (rows - 1) - 1) + 1;
+    }
+
+    // Print the grid with your specified characters
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < columns; j++)
+        {
+            // Use the modulo operator to cycle through the characters array
+            char c = characters[rand() % 8];
+            grid[i][j] = c;
+            if (i == middleRow && j == middleColumn)
+            {
+                grid[i][j] = 'A';
+            }
+            // check if the current cell is a zombies
+            for (int k = 0; k < zombies; k++)
+            {
+                if (i == zombiesX[k] && j == zombiesY[k])
+                {
+                    grid[i][j] = k + 1 + '0';
+                }
+            }
+        }
+    }
+
+    // Print column numbers below grid
+    cout << setw(5) << " ";
+    for (int i = 1; i <= columns; i++)
+    {
+        cout << setw(2) << i << setw(2) << ' ';
+    }
+    cout << endl;
+}
+
 void displayHealth() // Displays the health, damage and range of the alien and the zombies
 {
     cout << "\nAlien :     Health " << alienHealth << "\tDamage " << alienDamage << endl;
@@ -359,6 +638,31 @@ void displayHealth() // Displays the health, damage and range of the alien and t
              << " Health " << zombiesHealth[i] << ", Damage " << zombiesDamage[i] << ", Range " << ranges[i] << endl;
     }
 }
+
+void toLower(string &s)
+{
+    int i = 0, l = s.length();
+    for (i = 0; i < l; i++)
+        if (s[i] >= 'A' && s[i] <= 'Z')
+            s[i] -= 32;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int ClearScreen()
 {
